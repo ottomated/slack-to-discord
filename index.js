@@ -1,8 +1,9 @@
 var slackApi = require('slackbotapi');
 var discordApi = require('discord.js');
-var request = require('request');
-var imgur = require('imgur');
+
+
 var config = require('./config.json');
+
 var slack = new slackApi({
     'token': config.slackToken,
     'logging': false,
