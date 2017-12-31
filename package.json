@@ -1,0 +1,11 @@
+{
+  "name": "slack-discord",
+  "description": "Slack to Discord (and Discord to Slack) bridge",
+  "author": "Ottomated",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "discord.js": "github:hydrabolt/discord.js",
+    "slackbotapi": "^1.3.9"
+  }
+}
