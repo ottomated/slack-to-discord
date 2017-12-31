@@ -2,9 +2,9 @@ var slackApi = require('slackbotapi');
 var discordApi = require('discord.js');
 var request = require('request');
 var imgur = require('imgur');
-
+var config = require('./config.json');
 var slack = new slackApi({
-    'token': 'xoxs-93655797718-134048399586-288012327666-2a30abdda1',
+    'token': config.slackToken,
     'logging': false,
     'autoReconnect': true
 });
@@ -32,7 +32,7 @@ slack.on('message', function (data) {
         let discordChan = guild.channels.find('name', channelname);
         if (discordChan === null) {
             guild.createChannel(channelname, 'text', {
-                parent: guild.channels.get('392119520740769793')
+                parent: guild.channels.get(config.discord.channels)
             }).then(c => {
                 slackMessageToDiscord(c, slack.getUser(data.user), data.text, image);
                 c.setTopic(data.channel);
@@ -42,11 +42,11 @@ slack.on('message', function (data) {
         slackMessageToDiscord(discordChan, slack.getUser(data.user), data.text, image);
     }
     if (slack.getGroup(data.channel) !== null) {
-        let channelname = slack.getGroup(data.channel).members.filter(m => m !== 'U3Y1EBRH8').map(m => slack.getUser(m).name).join('_').replace(/[^\w_]/g, '');
+        let channelname = slack.getGroup(data.channel).members.filter(m => m !== slack.slackData.self.id).map(m => slack.getUser(m).name).join('_').replace(/[^\w_]/g, '');
         let discordChan = guild.channels.find('name', channelname);
         if (discordChan == null) {
             guild.createChannel(channelname, 'text', {
-                parent: guild.channels.get('392145070079344643')
+                parent: guild.channels.get(config.discord.directMessages)
             }).then(c => {
                 slackMessageToDiscord(c, slack.getUser(data.user), data.text, image);
                 c.setTopic(data.channel);
@@ -63,7 +63,7 @@ slack.on('message', function (data) {
 
         if (discordChan == null) {
             guild.createChannel(channelname, 'text', {
-                parent: guild.channels.get('392145070079344643')
+                parent: guild.channels.get(config.discord.directMessages)
             }).then(c => {
                 slackMessageToDiscord(c, slack.getUser(data.user), data.text, image);
                 c.setTopic(data.channel);
@@ -114,13 +114,13 @@ function filterSlackMsg(txt) {
 }
 discord.on('ready', () => {
     console.log('\x1b[47m\x1b[30mDiscord is ready!\x1b[0m');
-    guild = discord.guilds.get('392119520740769792');
+    guild = discord.guilds.get(config.discord.guild);
 });
 
 discord.on('message', message => {
     if (message.guild !== guild) return;
     if (message.author == discord.user) return;
-    if (message.channel.parent.id == '392119520740769793') {
+    if (message.channel.parent.id == config.discord.channels) {
         let chan = slack.getChannel(message.channel.topic);
         slack.sendMsg(chan.id, message.content);
         message.react('👍');
@@ -153,4 +153,4 @@ discord.on('message', message => {
     }
 });
 
-discord.login('MzkyMTIwNjA1NzczNjYwMTcy.DRioug.J9Gs-yoywAKa6VQdA70HVbjgch0');
+discord.login(config.discordToken);
